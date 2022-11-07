@@ -1,6 +1,14 @@
 //https://editor.p5js.org/howshekilledit/sketches/P00w6cEmL
 let piano_init = false;
 
+let notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+let colors = {bg: '#FAC05E', s1: "#8D99AE", s2: "#D80032", s3: "#EDF2F4", s4:"#2B2D42"};
+let sphere1 = {};
+let sphere2 = {};
+let sphere3 = {};
+let sphere4 = {};
+
+
 //default function plays note on keypress
 
 function triggerNote(note, midi = true) {
@@ -13,10 +21,12 @@ function triggerNote(note, midi = true) {
 
     //displays note name in browser (you can remove this line)
     document.getElementById('txt').innerText = note.name + note.octave;
-
     synth.triggerAttack(note.name + note.octave);
-
-
+    sphere1[note.name].position.x += -5;
+    sphere2[note.name].position.x += 5;
+    sphere3[note.name].position.y += 5;
+    sphere4[note.name].position.y += -5;
+    
 
     //Show what we are receiving
     console.log(
@@ -32,6 +42,8 @@ function triggerNote(note, midi = true) {
 function stopNote(note) {
     //stop note
     synth.triggerRelease(note.name + note.octave);
+
+    
 
     //Show what we are receiving
     console.log(
@@ -74,7 +86,7 @@ function keyReleased() {
 function setup() {
     noLoop();
     //color background white
-    scene.clearColor = new BABYLON.Color3.FromHexString('#ffffff');
+    scene.clearColor = new BABYLON.Color3.FromHexString(colors.bg);
 
     //initialize camera
     var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI / 4, 100, BABYLON.Vector3.Zero(), scene);
@@ -84,7 +96,17 @@ function setup() {
     var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
     light.intensity = 1;
 
-
+    for (let [i, n] of notes.entries()) {
+        sphere1[n] = createSphere(0 , 0, i-10, 10);
+        sphere2[n] = createSphere(0 , 0, i-20, 10);
+        sphere3[n] = createSphere(0 , 0, i-30, 10);
+        sphere4[n] = createSphere(0 , 0, i-40, 10);
+        sphere1[n].material = hexMat(colors.s1);
+        sphere2[n].material = hexMat(colors.s2);
+        sphere3[n].material = hexMat(colors.s3);
+        sphere4[n].material = hexMat(colors.s4);
+    }
+    
     synth = new Tone.PolySynth(Tone.MonoSynth, {
         volume: -8,
         oscillator: {
